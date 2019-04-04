@@ -71,7 +71,7 @@ else:
 
 # Get the masked matrix
 M_masked = MaskedMatrix(sampled_elements=sampled_elements, sampled_row_idx=sampled_row_idx, sampled_col_idx=sampled_col_idx, m=m, n=n, rank=rank)
-M_masked.initialize()
+M_masked.initialize(M_true=img_array)
 
 # initialize algorithm
 asd = AlternatingSteepestDescent(algo_name='asd')

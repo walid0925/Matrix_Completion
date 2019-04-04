@@ -23,7 +23,7 @@ class MaskedMatrix(object):
         sparse_matrix = sparse.coo_matrix((self.sampled_elements, (self.sampled_row_idx, self.sampled_col_idx)))
         return sparse_matrix.toarray()
 
-    def initialize(self) -> None:
+    def initialize(self, M_true=None) -> None:
         """ Initialize parameters for algorithms
         """
         print(min(self.M_omega.shape))
@@ -31,6 +31,7 @@ class MaskedMatrix(object):
             U, S, Vt = np.linalg.svd(self.M_omega, full_matrices=False)
         else:
             U, S, Vt = svds(self.M_omega, k=self.rank)
+        self.M_true = M_true
         S = np.diag(S)
         full_matrix = U.dot(S).dot(Vt)
         self.M_constructed = full_matrix

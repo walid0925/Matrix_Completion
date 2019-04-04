@@ -94,8 +94,8 @@ class AlternatingSteepestDescent(CompletionAlgorithm):
         """
         observed_norm = norm(matrix.sampled_elements)
         print('observed norm: {}'.format(observed_norm))
+        print('construction norm: {}'.format(norm(matrix.M_constructed[matrix.sampled_row_idx, matrix.sampled_col_idx])))
         res = matrix.sampled_elements - matrix.M_constructed[matrix.sampled_row_idx, matrix.sampled_col_idx]
-        print(norm(matrix.M_constructed[matrix.sampled_row_idx, matrix.sampled_col_idx]))
         res_norm = norm(res)
         print('res_norm: {}'.format(res_norm))
         print('sampled_elements: {}'.format(matrix.sampled_elements))
@@ -108,4 +108,9 @@ class AlternatingSteepestDescent(CompletionAlgorithm):
             self.stats['err_rel'][k] = err_res / self.stats['err_res'][k-shift]**(1./shift)
         else:
             self.stats['err_rel'][k] = 0.
+        if matrix.M_true is not None:
+            diff = matrix.M_constructed - matrix.M_true
+            err_matrix = norm(diff, 'fro')/norm(matrix.M_true, 'fro')
+            self.stats['err_M'][k] = err_matrix
+            print('err_matrix: {}'.format(err_matrix))
         return
