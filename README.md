@@ -1,6 +1,6 @@
 # Matrix_Completion
 
-This repository contains a set of methods implemented in python 3.x for matrix completion.
+This repository contains a set of methods implemented in python 3.x for matrix completion, adapted from MATLAB code originally written by [@svary](https://github.com/svary).
 
 Implemented so far are:
   - **Alternating Steepest Descent**, Reference: _Low-rank matrix completion by alternating steepest descent methods
