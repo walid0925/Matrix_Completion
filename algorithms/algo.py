@@ -1,11 +1,13 @@
 from abc import ABC, abstractmethod
-from ..data.matrix import MaskedMatrix
+import sys
+sys.path.append('..')
+from data.matrix import MaskedMatrix
 import numpy as np
 from numpy.linalg import norm
 import time
 
 class CompletionAlgorithm(ABC):
-    def __init__(self, name, **kwargs):
+    def __init__(self, algo_name, **kwargs):
         self.params = {
             'max_iterations': 500,
             'tol_res': 1e-5,
@@ -23,7 +25,7 @@ class CompletionAlgorithm(ABC):
         }
 
     @abstractmethod
-    def optimize(self, data)
+    def optimize(self, data):
         raise NotImplementedError("Should be implemented by subclassing")
 
 
@@ -46,10 +48,10 @@ class AlternatingSteepestDescent(CompletionAlgorithm):
             temp_X[matrix.sampled_row_idx, matrix.sampled_col_idx] = res.copy()
             grad_X = -temp_X.dot(matrix.Y.transpose())
             temp_tx = grad_X.dot(matrix.Y)
-            tx = norm(grad_X, 'fro')**2 / norm(temp_tx[matrix.sampled_row_idx, matrix.sampled_col_idx], 'fro')**2
+            tx = norm(grad_X, 'fro')**2 / norm(temp_tx[matrix.sampled_row_idx, matrix.sampled_col_idx], 2)**2
 
             # Step 2 in Algorithm 3: update X (and M)
-            matrix.X = matrix.X - tx.dot(grad_X)
+            matrix.X = matrix.X - tx*(grad_X)
             matrix.M_constructed = (matrix.X).dot(matrix.Y)
 
             # Step 3 in Algorithm 3: calculate gradient for Y
@@ -57,30 +59,37 @@ class AlternatingSteepestDescent(CompletionAlgorithm):
             temp_Y[matrix.sampled_row_idx, matrix.sampled_col_idx] = res.copy()
             grad_Y = -matrix.X.transpose().dot(temp_Y)
             temp_ty = matrix.X.dot(grad_Y)
-            ty = norm(grad_Y, 'fro')**2 / norm(temp_ty[matrix.sampled_row_idx, matrix.sampled_col_idx], 'fro')**2
+            ty = norm(grad_Y, 'fro')**2 / norm(temp_ty[matrix.sampled_row_idx, matrix.sampled_col_idx], 2)**2
 
             # Step 4 in Algorithm 3: update Y (and M)
-            matrix.Y = matrix.Y - ty.dot(grad_Y)
+            matrix.Y = matrix.Y - ty*(grad_Y)
             matrix.M_constructed = (matrix.X).dot(matrix.Y)
 
-            condition = self._update_condition(k)
             self._calculate_stats(matrix, k)
+            condition = self._update_condition(k)
 
-            k += 1
             end_time = time.time()
+            print('Iteration: {}'.format(k))
+            stats = [val[k] for key, val in self.stats.items()]
+            print('Stats: {}'.format(stats))
+            k += 1
 
         print('Finished in {} seconds'.format(end_time-start_time))
 
         return matrix
 
 
-    def _update_condition(k):
+    def _update_condition(self, k):
         """ Update stopping criterion at each iteration k
         """
-        condition = ((k <= self.params['max_iterations'] and self.params['err_res'][k+1] > self.params['tol_res'] and self.params['err_rel'][k-1] < self.params['tol_rel']) | k < 2)
+        cond1 = (k <= self.params['max_iterations'])
+        cond2 = (self.stats['err_res'][k] > self.params['tol_res'])
+        cond3 = (self.stats['err_rel'][k] < self.params['tol_rel'])
+        print([x for x in [cond1, cond2, cond3]])
+        condition = ((cond1 and cond2 and cond3) or k < 2)
         return condition
 
-    def _calculate_stats(matrix, k):
+    def _calculate_stats(self, matrix, k):
         """ Update stats dictionary at end of iteration k
         """
         observed_norm = norm(matrix.sampled_elements, 2)
