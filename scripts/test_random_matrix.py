@@ -24,7 +24,7 @@ parser.add_argument(
     '--sampling_frac',
     type=float,
     default=0.5,
-    help='number of columns'
+    help='fraction of pixels to keep when randomly sampling'
 )
 parser.add_argument(
     '--rank',
