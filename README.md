@@ -3,8 +3,8 @@
 This repository contains a set of methods implemented in python 3.x for matrix completion.
 
 Implemented so far are:
-  - **Alternating Steepest Descent**, Reference: _ Low-rank matrix completion by alternating steepest descent methods
-              Tanner & Wei, Appl. and Comp. Harmonic Analysis, 2016_,
+  - **Alternating Steepest Descent**, Reference: __Low-rank matrix completion by alternating steepest descent methods
+              Tanner & Wei, Appl. and Comp. Harmonic Analysis, 2016__,
               [link](https://people.maths.ox.ac.uk/tanner/papers/TaWei_ASD.pdf)
 
 
