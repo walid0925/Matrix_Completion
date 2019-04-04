@@ -30,6 +30,12 @@ class CompletionAlgorithm(ABC):
 
 
 class AlternatingSteepestDescent(CompletionAlgorithm):
+    """
+        Alternating Steepest Descent for matrix completion
+
+        Reference: Low-rank matrix completion by alternating steepest descent methods
+            Tanner & Wei, Appl. and Comp. Harmonic Analysis, 2016
+    """
     def optimize(self, matrix: MaskedMatrix):
         """ Loop through the iteration process to create the fully
             constructed matrix

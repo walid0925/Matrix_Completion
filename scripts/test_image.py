@@ -34,6 +34,12 @@ parser.add_argument(
     default=None,
     help='estimate for the rank of the matrix'
 )
+parser.add_argument(
+    '--max_iterations',
+    type=int,
+    default=500,
+    help='maximum number of algorithm iterations'
+)
 
 args = parser.parse_args()
 
@@ -74,7 +80,7 @@ M_masked = MaskedMatrix(sampled_elements=sampled_elements, sampled_row_idx=sampl
 M_masked.initialize(M_true=img_array)
 
 # initialize algorithm
-asd = AlternatingSteepestDescent(algo_name='asd')
+asd = AlternatingSteepestDescent(algo_name='asd', max_iterations=args.max_iterations)
 
 # optimize
 M_new = asd.optimize(M_masked)
