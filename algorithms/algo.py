@@ -82,7 +82,7 @@ class AlternatingSteepestDescent(CompletionAlgorithm):
     def _update_condition(self, k):
         """ Update stopping criterion at each iteration k
         """
-        cond1 = (k <= self.params['max_iterations'])
+        cond1 = (k < self.params['max_iterations']-1)
         cond2 = (self.stats['err_res'][k] > self.params['tol_res'])
         cond3 = (self.stats['err_rel'][k] < self.params['tol_rel'])
         print([x for x in [cond1, cond2, cond3]])
@@ -105,7 +105,7 @@ class AlternatingSteepestDescent(CompletionAlgorithm):
         self.stats['norm_M'][k] = norm(matrix.M_constructed, 'fro')
         shift = self.params['shift_rel']
         if k > shift:
-            self.stats['err_rel'][k] = err_res / self.stats['err_rel'][k-shift]**(1./shift)
+            self.stats['err_rel'][k] = err_res / self.stats['err_res'][k-shift]**(1./shift)
         else:
             self.stats['err_rel'][k] = 0.
         return

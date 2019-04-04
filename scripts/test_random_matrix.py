@@ -26,12 +26,17 @@ parser.add_argument(
     default=0.5,
     help='number of columns'
 )
+parser.add_argument(
+    '--rank',
+    type=int,
+    default=None,
+    help='estimate for the rank of the matrix'
+)
 
 args = parser.parse_args()
 
 # Create the random matrix
 M_true = np.random.random(size=(args.m, args.n))
-rank = matrix_rank(M_true)
 
 # Get sampled elements and indices from the random matrix
 omega_size = int(args.sampling_frac*M_true.size)
@@ -39,6 +44,18 @@ flat_index = np.arange(M_true.size)
 sampled_flat_indices = np.random.choice(flat_index, size=omega_size, replace=False)
 sampled_row_idx, sampled_col_idx = np.unravel_index(sampled_flat_indices, M_true.shape)
 sampled_elements = M_true[sampled_row_idx, sampled_col_idx]
+
+# Determine heuristic for rank if not provided
+if args.rank is None:
+    beta = 3.0
+    coeff = [1., -(args.m+args.n), omega_size/beta]
+    roots = np.roots(coeff)
+    try:
+        rank = int(np.min(roots[roots > 0]))
+    except ValueError:
+        raise ValueError('Rank calculation is invalid')
+else:
+    rank = args.rank
 
 # Get the masked matrix
 M_masked = MaskedMatrix(sampled_elements=sampled_elements, sampled_row_idx=sampled_row_idx, sampled_col_idx=sampled_col_idx, m=args.m, n=args.n, rank=rank)
