@@ -92,14 +92,19 @@ class AlternatingSteepestDescent(CompletionAlgorithm):
     def _calculate_stats(self, matrix, k):
         """ Update stats dictionary at end of iteration k
         """
-        observed_norm = norm(matrix.sampled_elements, 2)
+        observed_norm = norm(matrix.sampled_elements)
+        print('observed norm: {}'.format(observed_norm))
         res = matrix.sampled_elements - matrix.M_constructed[matrix.sampled_row_idx, matrix.sampled_col_idx]
-        res_norm = norm(res, 2)
+        print(norm(matrix.M_constructed[matrix.sampled_row_idx, matrix.sampled_col_idx]))
+        res_norm = norm(res)
+        print('res_norm: {}'.format(res_norm))
+        print('sampled_elements: {}'.format(matrix.sampled_elements))
+        print('constructed elements: {}'.format(matrix.M_constructed[matrix.sampled_row_idx, matrix.sampled_col_idx]))
         err_res = res_norm / observed_norm
         self.stats['err_res'][k] = err_res
         self.stats['norm_M'][k] = norm(matrix.M_constructed, 'fro')
         shift = self.params['shift_rel']
-        if k > shift + 1:
+        if k > shift:
             self.stats['err_rel'][k] = err_res / self.stats['err_rel'][k-shift]**(1./shift)
         else:
             self.stats['err_rel'][k] = 0.

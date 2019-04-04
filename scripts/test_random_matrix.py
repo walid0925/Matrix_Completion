@@ -48,4 +48,7 @@ M_masked.initialize()
 asd = AlternatingSteepestDescent(algo_name='asd')
 
 # optimize
-asd.optimize(M_masked)
+M_new = asd.optimize(M_masked)
+
+print(M_true)
+print(M_new.M_constructed)
